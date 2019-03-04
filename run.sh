@@ -17,15 +17,12 @@ if [ $stage -le 1 ]; then
 fi
 
 if [ $stage -le 3 ]; then
-
   local/prepare_dict.sh data/local/dict_nosp data/train data/dev data/test
-
   utils/prepare_lang.sh data/local/dict_nosp \
    "<UNK>" data/local/lang_tmp_nosp data/lang_nosp
-
-  #local/format_lms.sh --src-dir data/lang_nosp data/local/lm
 fi
 
+#TODO: LMS
 
 if [ $stage -le 6 ]; then
   for part in dev test train; do
@@ -118,9 +115,9 @@ if [ $stage -le 18 ]; then
                        7000 150000 data/train data/lang exp/tri4b_ali_train exp/tri5b
 fi
 
-
-if [ $stage -le 19 ]; then
-  # this does some data-cleaning. The cleaned data should be useful when we add
-  # the neural net and chain systems.  (although actually it was pretty clean already.)
-  local/run_cleanup_segmentation.sh
-fi
+# TODO:
+#if [ $stage -le 19 ]; then
+#  # this does some data-cleaning. The cleaned data should be useful when we add
+#  # the neural net and chain systems.  (although actually it was pretty clean already.)
+#  local/run_cleanup_segmentation.sh
+#fi
