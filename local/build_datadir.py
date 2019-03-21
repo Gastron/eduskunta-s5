@@ -53,7 +53,8 @@ class Line(Slottsy):
     return " ".join(str(getattr(self, attr)) for attr in self.__slots__)
 
 class Utt2SpkLine(Line): __slots__ = "uttid", "speaker" 
-class SegmentsLine(Line): __slots__ = "uttid", "recordid", "start", "end"
+class SegmentsLine(Line): 
+  __slots__ = "uttid", "recordid", "start", "end"
 class TextLine(Line): 
   __slots__ = "uttid", "text"
   def __str__(self):
@@ -81,6 +82,10 @@ def process_sentence_end(text):
   else:
     return False, text
 
+def time_equal(x,y): 
+  #"close enough" equality check for floating point time values
+  return x-y < 0.01
+
 def parse_eaf(eafpath, recordid,
     text_preprocessor=unity_text_preprocessor):
   #Parse Kaldi-style info from an eaf. 
@@ -103,8 +108,11 @@ def parse_eaf(eafpath, recordid,
   for start, end, word, tier_id in all_alignments:
     speaker = parse_spk(tier_id)
     parsed_word = text_preprocessor(word) #This could be an external program call
-    if not parsed_word:
+    #Manage some problem cases:
+    if not parsed_word:  
       continue
+    if time_equal(start, end):
+      end = end+0.1
     sentence_end, parsed_word = process_sentence_end(parsed_word)
     start_new = ( not utt2spk #first utterance found
         or start_new or speaker != utt2spk[-1].speaker )

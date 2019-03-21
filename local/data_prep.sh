@@ -51,6 +51,13 @@ done
 echo "$LC_ALL"
 utils/fix_data_dir.sh "$basedir"
 
+# Filter too short and too long data
+#1-30 seconds, max 500chars
+filtdir="$basedir"_filt
+local/remove_longshortdata.sh --minframes 100 --maxframes 3000 --maxchars 500 \
+  "$basedir" "$filtdir"
+
+
 # Test set is handled separetely:
 local/build_test_datadir.sh "$test_data_storage" "$data_dir"/"$test_set"
 
@@ -60,7 +67,7 @@ devdir="$data_dir"/"$dev_set"
 mkdir -p "$traindir" 
 mkdir -p "$devdir"
 
-utils/subset_data_dir.sh "$basedir" $ndevsamples "$devdir"
+utils/subset_data_dir.sh "$filtdir" $ndevsamples "$devdir"
 utils/subset_data_dir.sh \
-  --utt-list <(utils/filter_scp.pl --exclude "$devdir"/utt2spk "$basedir"/utt2spk) \
-  "$basedir" "$traindir" 
+  --utt-list <(utils/filter_scp.pl --exclude "$devdir"/utt2spk "$filtdir"/utt2spk) \
+  "$filtdir" "$traindir" 
