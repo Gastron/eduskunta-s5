@@ -19,7 +19,7 @@ fi
 if [ $stage -le 3 ]; then
   local/prepare_dict.sh data/local/dict_nosp data/train data/dev data/test
   utils/prepare_lang.sh data/local/dict_nosp \
-   "<UNK>" data/local/lang_tmp_nosp data/lang_nosp
+   "<unk>" data/local/lang_tmp_nosp data/lang_nosp
 fi
 
 #TODO: LMS
@@ -107,12 +107,12 @@ fi
 
 if [ $stage -le 18 ]; then
   steps/align_fmllr.sh --nj 40 --cmd "$train_cmd" \
-                       data/train data/lang exp/tri4b exp/tri4b_ali_train
+                       data/train data/lang_nosp exp/tri4b exp/tri4b_ali_train
 
   # train a SAT model on all data.  Use the train_quick.sh script
   # as it is faster.
   steps/train_quick.sh --cmd "$train_cmd" \
-                       7000 150000 data/train data/lang exp/tri4b_ali_train exp/tri5b
+                       7000 150000 data/train data/lang_nosp exp/tri4b_ali_train exp/tri5b
 fi
 
 # TODO:
